@@ -1,7 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cey8tufogmrqi"]
+[gd_scene load_steps=4 format=3 uid="uid://dcl5gjeevopgo"]
 
-[ext_resource type="PackedScene" uid="uid://drgi0y562p1vg" path="res://multiplayer_debug_panel.tscn" id="1_2bl66"]
+[ext_resource type="Script" path="res://main.gd" id="1_388rr"]
+[ext_resource type="PackedScene" uid="uid://cb781r7dg7xm6" path="res://multiplayer_server.tscn" id="1_wh3x7"]
+[ext_resource type="PackedScene" uid="uid://6ydw0plvr33k" path="res://multiplayer_client.tscn" id="2_48k1o"]
 
 [node name="Main" type="Node"]
-
-[node name="MultiplayerDebugPanel" parent="." instance=ExtResource("1_2bl66")]
+script = ExtResource("1_388rr")
+server_scene = ExtResource("1_wh3x7")
+client_scene = ExtResource("2_48k1o")

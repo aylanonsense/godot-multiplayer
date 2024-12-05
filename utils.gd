@@ -1,6 +1,8 @@
 class_name Utils
 
 
+const MULTIPLAYER_SERVER_ID := 1
+
 static func get_parsed_cmdline_args() -> Dictionary:
 	var arguments := {}
 	for argument in OS.get_cmdline_args():
@@ -17,8 +19,8 @@ static func get_parsed_cmdline_args() -> Dictionary:
 			value = ""
 			is_flag = true
 		match key:
-			"server": arguments[key] = is_flag or parse_str_as_bool(value)
-			"connect": arguments[key] = is_flag or parse_str_as_bool(value)
+			"simulate-network": arguments[key] = is_flag or parse_str_as_bool(value)
+			"num-clients": if not is_flag: arguments[key] = int(value)
 	return arguments
 
 
