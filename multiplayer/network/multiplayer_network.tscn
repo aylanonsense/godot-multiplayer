@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3 uid="uid://caetlixrk3dns"]
+
+[ext_resource type="Script" path="res://multiplayer/network/multiplayer_network.gd" id="1_3o180"]
+[ext_resource type="PackedScene" uid="uid://cb781r7dg7xm6" path="res://multiplayer/network/multiplayer_server.tscn" id="2_4bqx5"]
+[ext_resource type="PackedScene" uid="uid://6ydw0plvr33k" path="res://multiplayer/network/multiplayer_client.tscn" id="3_rf1yy"]
+
+[node name="MultiplayerNetwork" type="Node"]
+script = ExtResource("1_3o180")
+server_scene = ExtResource("2_4bqx5")
+client_scene = ExtResource("3_rf1yy")

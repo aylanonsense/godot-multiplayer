@@ -1,0 +1,61 @@
+[gd_scene load_steps=3 format=3 uid="uid://05p6b2eqqtp4"]
+
+[ext_resource type="Script" path="res://multiplayer/debug_ui/multiplayer_network_debug_panel.gd" id="1_5jde5"]
+[ext_resource type="PackedScene" uid="uid://b4j0v1jeuclbt" path="res://multiplayer/debug_ui/multiplayer_debug_panel_grid.tscn" id="2_sme34"]
+
+[node name="MultiplayerNetworkDebugPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5jde5")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="AddServerButton" type="Button" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add Server"
+
+[node name="AddClientButton" type="Button" parent="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add Client"
+
+[node name="MultiplayerDebugPanelGrid" parent="MarginContainer/VBoxContainer" instance=ExtResource("2_sme34")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer/AddServerButton" to="." method="_on_add_server_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/PanelContainer/MarginContainer/HBoxContainer/AddClientButton" to="." method="_on_add_client_button_pressed"]
