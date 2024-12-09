@@ -1,18 +1,80 @@
 extends Node
 
+@export var server_root_scene: PackedScene
+@export var client_root_scene: PackedScene
+@export var world_scene: PackedScene
 
-@onready var network := %MultiplayerNetwork as MultiplayerNetwork
+@onready var mode_selection_screen := %MultiplayerModeSelectionScreen as MultiplayerModeSelectionScreen
 
 
 func _ready() -> void:
 	var args := Utils.get_parsed_cmdline_args()
-	var auto_start: bool = args.has("start-network") and args["start-network"]
-	var num_clients: int = args["num-clients"] if args.has("num-clients") else 0
-	if auto_start or num_clients > 0:
-		var server := network.create_server()
-		if auto_start:
-			server.start_server()
-	for i in range(num_clients):
-		var client := network.create_client()
-		if auto_start:
-			client.connect_to_server()
+
+	# Layout windows
+	if args.has("window-placement"):
+		var window := get_window()
+		var screen_rect := DisplayServer.screen_get_usable_rect(window.current_screen)
+		var top_gap := 150
+		var gap := 75
+		var half_gap := gap / 2
+		var position := screen_rect.position + Vector2i(gap, top_gap)
+		var width := screen_rect.size.x - 2 * gap
+		var half_width := width / 2
+		var height := screen_rect.size.y - top_gap - gap
+		var half_height := height / 2
+		match args["window-placement"]:
+			"full":
+				window.position = position
+				window.size = Vector2i(width, height)
+			"left":
+				window.position = position
+				window.size = Vector2i(half_width - half_gap, height)
+			"right":
+				window.position = position + Vector2i(half_width + half_gap, 0)
+				window.size = Vector2i(half_width - half_gap, height)
+			"upper-left":
+				window.position = position
+				window.size = Vector2i(half_width - half_gap, half_height - half_gap)
+			"lower-left":
+				window.position = position + Vector2i(0, half_height + half_gap)
+				window.size = Vector2i(half_width - half_gap, half_height - half_gap)
+			"upper-right":
+				window.position = position + Vector2i(half_width + half_gap, 0)
+				window.size = Vector2i(half_width - half_gap, half_height - half_gap)
+			"lower-right":
+				window.position = position + Vector2i(half_width + half_gap, half_height + half_gap)
+				window.size = Vector2i(half_width - half_gap, half_height - half_gap)
+
+	# Automatically start server or client
+	var address: String = args["address"] if args.has("address") else ""
+	var port: int = args["port"] if args.has("port") else 12345
+	if args.has("server") and args["server"]:
+		_create_and_start_server(port)
+	elif args.has("auto-connect") and args["auto-connect"]:
+		_create_client_and_connect_to_server(address, port)
+
+
+func _create_and_start_server(port: int) -> void:
+	mode_selection_screen.queue_free()
+	var server := server_root_scene.instantiate() as MultiplayerServerRoot
+	add_child(server)
+	var world := world_scene.instantiate() as Node
+	server.add_child(world)
+	server.start_server(port)
+
+
+func _create_client_and_connect_to_server(address: String, port: int) -> void:
+	mode_selection_screen.queue_free()
+	var client := client_root_scene.instantiate() as MultiplayerClientRoot
+	add_child(client)
+	var world := world_scene.instantiate() as Node
+	client.add_child(world)
+	client.connect_to_server(address, port)
+
+
+func _on_server_mode_selected(port: int) -> void:
+	_create_and_start_server(port)
+
+
+func _on_client_mode_selected(address: String, port: int) -> void:
+	_create_client_and_connect_to_server(address, port)

@@ -1,14 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://dcl5gjeevopgo"]
+[gd_scene load_steps=6 format=3 uid="uid://dcl5gjeevopgo"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_388rr"]
-[ext_resource type="PackedScene" uid="uid://caetlixrk3dns" path="res://multiplayer/network/multiplayer_network.tscn" id="4_4j0ve"]
-[ext_resource type="PackedScene" uid="uid://05p6b2eqqtp4" path="res://multiplayer/debug_ui/multiplayer_network_debug_panel.tscn" id="5_06wq4"]
+[ext_resource type="PackedScene" uid="uid://cb781r7dg7xm6" path="res://multiplayer/multiplayer_server_root.tscn" id="2_gah62"]
+[ext_resource type="PackedScene" uid="uid://3npk53mxih3q" path="res://multiplayer/multiplayer_mode_selection_screen.tscn" id="2_yd4a7"]
+[ext_resource type="PackedScene" uid="uid://6ydw0plvr33k" path="res://multiplayer/multiplayer_client_root.tscn" id="3_b055b"]
+[ext_resource type="PackedScene" uid="uid://bpcu4hcc0kwod" path="res://world.tscn" id="4_weot8"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_388rr")
+server_root_scene = ExtResource("2_gah62")
+client_root_scene = ExtResource("3_b055b")
+world_scene = ExtResource("4_weot8")
 
-[node name="MultiplayerNetwork" parent="." instance=ExtResource("4_4j0ve")]
+[node name="MultiplayerModeSelectionScreen" parent="." instance=ExtResource("2_yd4a7")]
 unique_name_in_owner = true
 
-[node name="MultiplayerNetworkDebugPanel" parent="." node_paths=PackedStringArray("network") instance=ExtResource("5_06wq4")]
-network = NodePath("../MultiplayerNetwork")
+[connection signal="client_mode_selected" from="MultiplayerModeSelectionScreen" to="." method="_on_client_mode_selected"]
+[connection signal="server_mode_selected" from="MultiplayerModeSelectionScreen" to="." method="_on_server_mode_selected"]

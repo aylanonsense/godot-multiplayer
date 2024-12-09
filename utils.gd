@@ -19,8 +19,11 @@ static func get_parsed_cmdline_args() -> Dictionary:
 			value = ""
 			is_flag = true
 		match key:
-			"start-network": arguments[key] = is_flag or parse_str_as_bool(value)
-			"num-clients": if not is_flag: arguments[key] = int(value)
+			"window-placement": if not is_flag: arguments[key] = value
+			"server": arguments[key] = is_flag or parse_str_as_bool(value)
+			"auto-connect": arguments[key] = is_flag or parse_str_as_bool(value)
+			"address": if not is_flag: arguments[key] = value
+			"port": if not is_flag: arguments[key] = int(value)
 	return arguments
 
 

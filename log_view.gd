@@ -9,7 +9,7 @@ extends Control
 
 func _ready() -> void:
 	log_line_template.visible = false
-	scroll_container.get_v_scroll_bar().connect("changed", _scroll_logs_to_bottom)
+	scroll_container.get_v_scroll_bar().changed.connect(_scroll_logs_to_bottom)
 
 
 func add_log_line(text: String) -> void:

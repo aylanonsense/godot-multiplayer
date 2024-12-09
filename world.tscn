@@ -1,0 +1,82 @@
+[gd_scene load_steps=8 format=3 uid="uid://bpcu4hcc0kwod"]
+
+[ext_resource type="PackedScene" uid="uid://wvrumw1g3df8" path="res://player_character_spawner.tscn" id="1_18xry"]
+[ext_resource type="PackedScene" uid="uid://jcc2mrk8c4gv" path="res://network_status_panel.tscn" id="2_gqyw5"]
+
+[sub_resource type="Environment" id="Environment_n8x1b"]
+background_mode = 1
+background_color = Color(0.611976, 0.242228, 0.393041, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.321969, 0.145474, 0.197953, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vwfj7"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_21jp2"]
+size = Vector2(10, 10)
+subdivide_width = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0h8u3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ohtco"]
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_n8x1b")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 5, 5)
+
+[node name="PlayerCharacterSpawner" parent="." instance=ExtResource("1_18xry")]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_vwfj7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("PlaneMesh_21jp2")
+
+[node name="Cube" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75841, 0.5, -1.89747)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube"]
+shape = SubResource("BoxShape3D_0h8u3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube"]
+mesh = SubResource("BoxMesh_ohtco")
+
+[node name="Cube2" type="StaticBody3D" parent="."]
+transform = Transform3D(0.942967, 0, -0.332885, 0, 1, 0, 0.332885, 0, 0.942967, 2.69064, 0.5, 1.04789)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube2"]
+shape = SubResource("BoxShape3D_0h8u3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube2"]
+mesh = SubResource("BoxMesh_ohtco")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NetworkStatusPanel" parent="UI" instance=ExtResource("2_gqyw5")]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 615.0
+offset_bottom = 315.0
+grow_horizontal = 1
+grow_vertical = 1

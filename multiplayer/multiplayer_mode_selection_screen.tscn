@@ -1,0 +1,135 @@
+[gd_scene load_steps=3 format=3 uid="uid://3npk53mxih3q"]
+
+[ext_resource type="Script" path="res://multiplayer/multiplayer_mode_selection_screen.gd" id="1_sn72h"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_yjnls"]
+font_size = 24
+
+[node name="MultiplayerModeSelectionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sn72h")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = 100.0
+offset_right = 200.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="ServerPanel" type="PanelContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer/ServerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer/ServerPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Server"
+label_settings = SubResource("LabelSettings_yjnls")
+
+[node name="GridContainer" type="GridContainer" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 15
+columns = 2
+
+[node name="ServerPortLabel" type="Label" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Port:"
+
+[node name="ServerPortInput" type="LineEdit" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "12345"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="HostServerButton" type="Button" parent="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Host"
+
+[node name="ClientPanel" type="PanelContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer/ClientPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer/ClientPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Client"
+label_settings = SubResource("LabelSettings_yjnls")
+
+[node name="GridContainer" type="GridContainer" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 15
+columns = 2
+
+[node name="ClientAddressLabel" type="Label" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Address:"
+
+[node name="ClientAddressInput" type="LineEdit" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "127.0.0.1"
+
+[node name="ClientPortLabel" type="Label" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Port:"
+
+[node name="ClientPortInput" type="LineEdit" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "12345"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="ClientConnectButton" type="Button" parent="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Connect"
+
+[connection signal="pressed" from="Control/VBoxContainer/ServerPanel/MarginContainer/VBoxContainer/HBoxContainer/HostServerButton" to="." method="_on_host_server_button_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/ClientPanel/MarginContainer/VBoxContainer/HBoxContainer/ClientConnectButton" to="." method="_on_client_connect_button_pressed"]
