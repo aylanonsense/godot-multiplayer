@@ -8,10 +8,13 @@ extends Node
 
 
 func _ready() -> void:
-	var args := Utils.get_parsed_cmdline_args()
+	print("Godot Multiplayer")
+	print("is_dedicated_server=%s" % Utils.is_dedicated_server())
+	LaunchArgs.print_args()
+	LaunchArgs.print_warnings()
 
 	# Layout windows
-	if args.has("window-placement"):
+	if LaunchArgs.has_window_placement:
 		var window := get_window()
 		var screen_rect := DisplayServer.screen_get_usable_rect(window.current_screen)
 		var top_gap := 150
@@ -22,7 +25,7 @@ func _ready() -> void:
 		var half_width := width / 2
 		var height := screen_rect.size.y - top_gap - gap
 		var half_height := height / 2
-		match args["window-placement"]:
+		match LaunchArgs.window_placement:
 			"full":
 				window.position = position
 				window.size = Vector2i(width, height)
@@ -46,11 +49,11 @@ func _ready() -> void:
 				window.size = Vector2i(half_width - half_gap, half_height - half_gap)
 
 	# Automatically start server or client
-	var address: String = args["address"] if args.has("address") else ""
-	var port: int = args["port"] if args.has("port") else 12345
-	if args.has("server") and args["server"]:
+	var address: String = LaunchArgs.address if LaunchArgs.has_address else "127.0.0.1"
+	var port: int = LaunchArgs.port if LaunchArgs.has_port else Utils.DEFAULT_SERVER_PORT_ID
+	if (LaunchArgs.has_server_flag and LaunchArgs.server) or Utils.is_dedicated_server():
 		_create_and_start_server(port)
-	elif args.has("auto-connect") and args["auto-connect"]:
+	elif LaunchArgs.has_auto_connect_flag and LaunchArgs.auto_connect:
 		_create_client_and_connect_to_server(address, port)
 
 

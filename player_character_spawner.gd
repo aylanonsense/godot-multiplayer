@@ -12,7 +12,7 @@ func _ready() -> void:
 func _on_peer_connected(id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if id == Utils.MULTIPLAYER_SERVER_ID:
+	if id == Utils.MULTIPLAYER_SERVER_PEER_ID:
 		return
 	var player_character := player_character_scene.instantiate() as PlayerCharacter
 	player_character.name = str(id)
