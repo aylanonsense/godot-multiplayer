@@ -1,0 +1,57 @@
+name: Godot Multiplayer Build
+on: workflow_dispatch
+
+env:
+  GODOT_VERSION: 4.3
+
+jobs:
+  build-linux-server:
+    name: Build Linux Server
+    runs-on: ubuntu-24.04
+    container: barichello/godot-ci:4.3
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Set up Godot export templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      - name: Build the executable with Godot headless
+        run: godot --headless --verbose --export-release "Linux Server"
+      - name: Upload the executable as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-multiplayer-linux-server-executable
+          path: builds/linux_server/godot_multiplayer.x86_64
+          retention-days: 2
+  dockerize-linux-server:
+    name: Dockerize Linux Server
+    needs: build-linux-server
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Download the executable artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-multiplayer-linux-server-executable
+          path: builds/linux_server
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build the Docker image
+        uses: docker/build-push-action@v6
+        with:
+          tags: godot-multiplayer-linux-server
+          context: .
+          file: ci/linux_server/Dockerfile
+          outputs: type=docker,dest=builds/linux_server/godot_multiplayer.tar
+      - name: Upload the Docker image as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-multiplayer-linux-server-image
+          path: builds/linux_server/godot_multiplayer.tar
+          retention-days: 2
