@@ -45,7 +45,7 @@ jobs:
       - name: Build the Docker image
         uses: docker/build-push-action@v6
         with:
-          tags: godot-multiplayer-linux-server
+          tags: godot-multiplayer-linux-server:latest
           context: .
           file: ci/linux_server/Dockerfile
           outputs: type=docker,dest=builds/linux_server/godot_multiplayer.tar
@@ -55,3 +55,34 @@ jobs:
           name: godot-multiplayer-linux-server-image
           path: builds/linux_server/godot_multiplayer.tar
           retention-days: 2
+  deploy-linux-server:
+    name: Deploy Linux Server
+    needs: dockerize-linux-server
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download the Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-multiplayer-linux-server-image
+          path: .
+      - name: Upload the Docker image to the Linux server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.LINUX_SERVER_IP_ADDRESS }}
+          username: dockeruser
+          key: ${{ secrets.LINUX_SERVER_SSH_PRIVATE_KEY }}
+          source: godot_multiplayer.tar
+          target: /home/dockeruser
+          overwrite: true
+      - name: Start up a Docker container on the Linux Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.LINUX_SERVER_IP_ADDRESS }}
+          username: dockeruser
+          key: ${{ secrets.LINUX_SERVER_SSH_PRIVATE_KEY }}
+          script: |
+            docker container stop $(docker container ls -a -q)
+            docker image load -i godot_multiplayer.tar
+            docker container run -d godot-multiplayer-linux-server:latest
+            docker container prune -f
+            docker image prune -f
