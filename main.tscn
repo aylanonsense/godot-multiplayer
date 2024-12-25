@@ -1,19 +1,14 @@
 [gd_scene load_steps=6 format=3 uid="uid://dcl5gjeevopgo"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_388rr"]
-[ext_resource type="PackedScene" uid="uid://cb781r7dg7xm6" path="res://multiplayer/multiplayer_server_root.tscn" id="2_gah62"]
-[ext_resource type="PackedScene" uid="uid://3npk53mxih3q" path="res://multiplayer/multiplayer_mode_selection_screen.tscn" id="2_yd4a7"]
-[ext_resource type="PackedScene" uid="uid://6ydw0plvr33k" path="res://multiplayer/multiplayer_client_root.tscn" id="3_b055b"]
-[ext_resource type="PackedScene" uid="uid://bpcu4hcc0kwod" path="res://world.tscn" id="4_weot8"]
+[ext_resource type="PackedScene" uid="uid://cb781r7dg7xm6" path="res://multiplayer/multiplayer_server.tscn" id="2_6cinn"]
+[ext_resource type="PackedScene" uid="uid://6ydw0plvr33k" path="res://multiplayer/multiplayer_client.tscn" id="3_6awqp"]
+[ext_resource type="PackedScene" uid="uid://beusltnet7ty7" path="res://multiplayer/multiplayer_server_control_panel.tscn" id="3_g40mb"]
+[ext_resource type="PackedScene" uid="uid://c6w8dcx3ibtgs" path="res://multiplayer/multiplayer_client_control_panel.tscn" id="4_r82l6"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_388rr")
-server_root_scene = ExtResource("2_gah62")
-client_root_scene = ExtResource("3_b055b")
-world_scene = ExtResource("4_weot8")
-
-[node name="MultiplayerModeSelectionScreen" parent="." instance=ExtResource("2_yd4a7")]
-unique_name_in_owner = true
-
-[connection signal="client_mode_selected" from="MultiplayerModeSelectionScreen" to="." method="_on_client_mode_selected"]
-[connection signal="server_mode_selected" from="MultiplayerModeSelectionScreen" to="." method="_on_server_mode_selected"]
+server_scene = ExtResource("2_6cinn")
+server_control_panel_scene = ExtResource("3_g40mb")
+client_scene = ExtResource("3_6awqp")
+client_control_panel_scene = ExtResource("4_r82l6")
