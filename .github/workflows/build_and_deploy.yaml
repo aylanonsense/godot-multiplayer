@@ -1,4 +1,4 @@
-name: Godot Multiplayer Build
+name: Build and deploy
 on: workflow_dispatch
 
 env:
@@ -24,7 +24,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: godot-multiplayer-linux-server-executable
-          path: builds/linux_server/godot_multiplayer.x86_64
+          path: build/linux_server/godot_multiplayer.x86_64
           retention-days: 2
   dockerize-linux-server:
     name: Dockerize Linux Server
@@ -39,21 +39,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: godot-multiplayer-linux-server-executable
-          path: builds/linux_server
+          path: build/linux_server
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build the Docker image
         uses: docker/build-push-action@v6
         with:
-          tags: godot-multiplayer-linux-server:latest
+          tags: godot-multiplayer-linux-server
           context: .
-          file: ci/linux_server/Dockerfile
-          outputs: type=docker,dest=builds/linux_server/godot_multiplayer.tar
+          file: build/tools/linux_server/Dockerfile
+          outputs: type=docker,dest=build/linux_server/godot_multiplayer.tar
       - name: Upload the Docker image as an artifact
         uses: actions/upload-artifact@v4
         with:
           name: godot-multiplayer-linux-server-image
-          path: builds/linux_server/godot_multiplayer.tar
+          path: build/linux_server/godot_multiplayer.tar
           retention-days: 2
   deploy-linux-server:
     name: Deploy Linux Server
@@ -83,6 +83,6 @@ jobs:
           script: |
             docker container stop $(docker container ls -a -q)
             docker image load -i godot_multiplayer.tar
-            docker container run -d godot-multiplayer-linux-server:latest
+            docker container run -p 8817:8817/udp -d godot-multiplayer-linux-server
             docker container prune -f
             docker image prune -f

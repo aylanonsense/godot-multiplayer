@@ -10,6 +10,12 @@ signal client_mode_selected(address: String, port: int)
 @onready var client_port_input := %ClientPortInput as LineEdit
 
 
+func _ready() -> void:
+	var port_text := str(GameSettings.get_default_port())
+	server_port_input.placeholder_text = port_text
+	client_port_input.placeholder_text = port_text
+
+
 func _on_host_server_button_pressed() -> void:
 	var port := int(server_port_input.text if not server_port_input.text.is_empty() else server_port_input.placeholder_text)
 	server_mode_selected.emit(port)

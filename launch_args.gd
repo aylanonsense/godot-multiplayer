@@ -3,6 +3,10 @@ extends Node
 
 var server: bool
 var has_server_flag := false
+var auto_start: bool
+var has_auto_start_flag := false
+var client: bool
+var has_client_flag := false
 var auto_connect: bool
 var has_auto_connect_flag := false
 var address: String
@@ -24,6 +28,10 @@ func _ready() -> void:
 func print_args() -> void:
 	if has_server_flag:
 		print("server=%s" % server)
+	if has_auto_start_flag:
+		print("auto-start=%s" % auto_start)
+	if has_client_flag:
+		print("client=%s" % client)
 	if has_auto_connect_flag:
 		print("auto-connect=%s" % auto_connect)
 	if has_address:
@@ -56,6 +64,12 @@ func _parse_arg(arg: String, complain_if_unknown_arg: bool) -> void:
 		"server":
 			server = is_flag or _parse_str_as_bool(value)
 			has_server_flag = true
+		"auto-start":
+			auto_start = is_flag or _parse_str_as_bool(value)
+			has_auto_start_flag = true
+		"client":
+			client = is_flag or _parse_str_as_bool(value)
+			has_client_flag = true
 		"auto-connect":
 			auto_connect = is_flag or _parse_str_as_bool(value)
 			has_auto_connect_flag = true
