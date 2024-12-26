@@ -13,105 +13,75 @@ var port: int:
 
 @onready var address_input := %AddressInput as LineEdit
 @onready var port_input := %PortInput as LineEdit
-@onready var connection_button := %ConnectionButton as Button
-@onready var send_number_button := %SendNumberButton as Button
+@onready var connect_button := %ConnectButton as Button
+@onready var disconnect_button := %DisconnectButton as Button
 @onready var state_label := %StateLabel as Label
-@onready var log_view := %LogView as LogView
+@onready var number_inputs: Array[SpinBox] = [%NumberInput1, %NumberInput2]
+@onready var send_button := %SendButton as Button
+@onready var logs := %LogView as LogView
 
 
 func _ready() -> void:
 	port_input.placeholder_text = str(GameSettings.get_default_port())
-	client.something_happened.connect(_on_client_something_happened)
+	for number_input in number_inputs:
+		number_input.value = randi_range(0, 254)
+	_refresh_ui()
+	client.started_connecting.connect(_on_client_started_connecting)
+	client.connected.connect(_on_client_connected)
+	client.disconnected.connect(_on_client_disconnected)
+	client.received_packet.connect(_on_client_received_packet)
 
 
-func _process(_delta: float) -> void:
-	state_label.text = "" if not client._peer else Utils.enet_peer_state_string(client._peer.get_state())
-	var is_connected := false
-	var can_connect := false
-	var can_disconnect := false
-	var can_send := false
-	if not client._peer:
-		can_connect = true
-	else:
-		match client._peer.get_state():
-			ENetPacketPeer.PeerState.STATE_DISCONNECTED:
-				can_connect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTING:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTION_PENDING:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTION_SUCCEEDED:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTED:
-				is_connected = true
-				can_disconnect = true
-				can_send = true
-			ENetPacketPeer.PeerState.STATE_DISCONNECT_LATER:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_DISCONNECTING:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_DISCONNECT:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_ZOMBIE:
-				can_connect = true
-	if is_connected:
-		address = client._peer.get_remote_address()
-		port = client._peer.get_remote_port()
-	connection_button.disabled = not can_connect and not can_disconnect
-	if can_connect:
-		connection_button.text = "Connect"
-	elif can_disconnect:
-		connection_button.text = "Disconnect"
-	else:
-		connection_button.text = "Disconnect" if is_connected else "Connect"
-	send_number_button.disabled = not can_send
-	address_input.editable = can_connect
-	port_input.editable = can_connect
-
-
-func _on_client_something_happened(text: String) -> void:
-	log_view.add_log_line(text)
+func _print_and_log(text: String) -> void:
 	print(text)
+	logs.add_log_line(text)
 
 
-func _on_connection_button_pressed() -> void:
-	var is_connected := false
-	var can_connect := false
-	var can_disconnect := false
-	if not client._peer:
-		can_connect = true
-	else:
-		match client._peer.get_state():
-			ENetPacketPeer.PeerState.STATE_DISCONNECTED:
-				can_connect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTING:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTION_PENDING:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTION_SUCCEEDED:
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_CONNECTED:
-				is_connected = true
-				can_disconnect = true
-			ENetPacketPeer.PeerState.STATE_DISCONNECT_LATER:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_DISCONNECTING:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_DISCONNECT:
-				is_connected = true
-			ENetPacketPeer.PeerState.STATE_ZOMBIE:
-				can_connect = true
-	if can_connect:
-		var address := address_input.text if not address_input.text.is_empty() else address_input.placeholder_text
-		var port := int(port_input.text if not port_input.text.is_empty() else port_input.placeholder_text)
-		client.connect_to_server(address, port)
-	elif can_disconnect:
-		client.disconnect_from_server()
+func _refresh_ui() -> void:
+	address_input.editable = client.state == MultiplayerClient.State.DISCONNECTED
+	port_input.editable = client.state == MultiplayerClient.State.DISCONNECTED
+	connect_button.disabled = client.state != MultiplayerClient.State.DISCONNECTED
+	disconnect_button.disabled = client.state == MultiplayerClient.State.DISCONNECTED
+	send_button.disabled = client.state != MultiplayerClient.State.CONNECTED
+	match client.state:
+		MultiplayerClient.State.DISCONNECTED: state_label.text = "Disconnected"
+		MultiplayerClient.State.CONNECTING: state_label.text = "Connecting"
+		MultiplayerClient.State.CONNECTED: state_label.text = "Connected"
 
 
-func _on_send_number_button_pressed() -> void:
-	client.send_number(randi_range(0, 254))
+func _on_client_started_connecting() -> void:
+	_refresh_ui()
+	_print_and_log("Connecting to address %s port %d.." % [client.address, client.port])
+
+
+func _on_client_connected() -> void:
+	_refresh_ui()
+	_print_and_log("Connected")
+
+
+func _on_client_disconnected() -> void:
+	_refresh_ui()
+	_print_and_log("Disconnected")
+
+
+func _on_client_received_packet(packet: PackedByteArray) -> void:
+	_print_and_log("Received packet %s" % str(packet))
+
+
+func _on_connect_button_pressed() -> void:
+	var address := address_input.text if not address_input.text.is_empty() else address_input.placeholder_text
+	var port := int(port_input.text if not port_input.text.is_empty() else port_input.placeholder_text)
+	client.connect_to_server(address, port)
+
+
+func _on_disconnect_button_pressed() -> void:
+	client.disconnect_from_server()
+
+
+func _on_send_button_pressed() -> void:
+	var packet := PackedByteArray()
+	packet.resize(number_inputs.size())
+	for i in range(number_inputs.size()):
+		packet.encode_u8(i, int(number_inputs[i].value))
+	_print_and_log("Sending packet %s" % str(packet))
+	client.send_packet(packet)

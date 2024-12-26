@@ -1,20 +1,19 @@
 extends Node
 
 
-var server: bool
-var has_server_flag := false
-var auto_start: bool
-var has_auto_start_flag := false
-var client: bool
-var has_client_flag := false
-var auto_connect: bool
-var has_auto_connect_flag := false
-var address: String
-var has_address := false
-var port: int
-var has_port := false
-var window_placement: String
-var has_window_placement := false
+var server := false
+var auto_start := false
+var client := false
+var auto_connect := false
+var address := ""
+var has_address: bool:
+	get(): return not address.is_empty()
+var port := -1
+var has_port: bool:
+	get(): return port >= 0
+var window_placement := ""
+var has_window_placement: bool:
+	get(): return not window_placement.is_empty()
 var warnings: Array[String] = []
 
 
@@ -26,18 +25,18 @@ func _ready() -> void:
 
 
 func print_args() -> void:
-	if has_server_flag:
-		print("server=%s" % server)
-	if has_auto_start_flag:
-		print("auto-start=%s" % auto_start)
-	if has_client_flag:
-		print("client=%s" % client)
-	if has_auto_connect_flag:
-		print("auto-connect=%s" % auto_connect)
+	if server:
+		print("server=true")
+	if auto_start:
+		print("auto-start=true")
+	if client:
+		print("client=true")
+	if auto_connect:
+		print("auto-connect=true")
 	if has_address:
 		print("address=%s" % address)
 	if has_port:
-		print("port=%s" % port)
+		print("port=%d" % port)
 	if has_window_placement:
 		print("window-placement=%s" % window_placement)
 
@@ -62,39 +61,19 @@ func _parse_arg(arg: String, complain_if_unknown_arg: bool) -> void:
 		is_flag = true
 	match key:
 		"server":
-			server = is_flag or _parse_str_as_bool(value)
-			has_server_flag = true
+			server = is_flag or Utils.parse_str_as_bool(value)
 		"auto-start":
-			auto_start = is_flag or _parse_str_as_bool(value)
-			has_auto_start_flag = true
+			auto_start = is_flag or Utils.parse_str_as_bool(value)
 		"client":
-			client = is_flag or _parse_str_as_bool(value)
-			has_client_flag = true
+			client = is_flag or Utils.parse_str_as_bool(value)
 		"auto-connect":
-			auto_connect = is_flag or _parse_str_as_bool(value)
-			has_auto_connect_flag = true
+			auto_connect = is_flag or Utils.parse_str_as_bool(value)
 		"address":
-			if is_flag or not value.is_valid_ip_address():
-				warnings.append("Launch argument \"%s\" must be an IP address" % key)
-			else:
-				address = value
-				has_address = true
+			address = value
 		"port":
-			if is_flag or not value.is_valid_int():
-				warnings.append("Launch argument \"%s\" must be an integer" % key)
-			else:
-				port = int(value)
-				has_port = true
+			port = int(value)
 		"window-placement":
-			if is_flag or value.is_empty():
-				warnings.append("Launch argument \"%s\" must be given a value" % key)
-			else:
-				window_placement = value
-				has_window_placement = true
+			window_placement = value
 		_:
 			if complain_if_unknown_arg:
 				warnings.append("Unknown launch argument \"%s\"" % key)
-
-
-func _parse_str_as_bool(s: String) -> bool:
-	return s.to_lower() == "true" or s == "1"

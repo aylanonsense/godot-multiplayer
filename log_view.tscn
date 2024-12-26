@@ -27,4 +27,4 @@ size_flags_horizontal = 3
 [node name="LogLineTemplate" type="Label" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Placeholder log line"
+text = "Logs"
